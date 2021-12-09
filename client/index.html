@@ -1,0 +1,29 @@
+<div>
+    <input type="text" id="message">
+    <input type="button" onclick="send()" value="Send">
+</div>
+<div id="log"></div>
+
+<script>
+    const ws = new WebSocket("wss://21falzt1m9.execute-api.us-east-1.amazonaws.com/prod/");
+
+    ws.onopen = e => {
+        console.log("Socket connected.", e);
+    };
+    ws.onclose = e => {
+        console.log("Socket closed.", e);
+    };
+    ws.onmessage = e => {
+        const data = JSON.parse(e.data);
+        const log = document.getElementById("log");
+        log.innerHTML += data.data + "<br />";
+    };
+
+    function send() {
+        const messageToSend = document.getElementById("message").value;
+        if (!messageToSend) return;
+
+        const msg = {"action": "chat", "data": {"message": messageToSend}};
+        ws.send(JSON.stringify(msg));
+    }
+</script>
